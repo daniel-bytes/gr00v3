@@ -1,0 +1,253 @@
+<!doctype html>
+<html>
+    <head>
+        <title>gr00v3</title>
+        <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/themes/base/jquery-ui.css" type="text/css" media="all" /> 
+        <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.0.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.3/underscore-min.js"></script>
+        <script src="/js/assets/Audiolet.js"></script>
+
+        <script src="/js/app/gr00v3.js"></script>
+        <script src="/js/app/DrumSynth.js"></script>
+        <script src="/js/app/Sequencer.js"></script>
+        
+        <style>
+            div.paramlabel {
+                float:left;
+                width:50px;
+                margin-right: 20px;
+            }
+            
+            div.divider {
+                clear:both;
+                padding-bottom: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>
+            gr00v3
+        </h1>
+        
+		<canvas id="seq" width="1000px" height="200px"></canvas>	
+        <button id="start">start</button>
+        <button id="stop">stop</button>
+		
+        <div>
+            <div class="paramlabel">
+            freq: 
+            </div>
+            <div style="float:left;">
+                <div id="freq0" style="height: 10px; width: 200px;"></div>
+            </div>
+            <div class="divider"></div>
+            
+            <div class="paramlabel">
+            gain: 
+            </div>
+            <div style="float:left;">
+                <div id="gain0" style="height: 10px; width: 200px;"></div>
+            </div>
+            <div class="divider"></div>
+            
+            <div class="paramlabel">
+            attack: 
+            </div>
+            <div style="float:left;">
+                <div id="attack0" style="height: 10px; width: 200px;"></div>
+            </div>
+            <div class="divider"></div>
+            
+            <div class="paramlabel">
+            release: 
+            </div>
+            <div style="float:left;">
+                <div id="release0" style="height: 10px; width: 200px;"></div>
+            </div>
+            <div class="divider"></div>
+            
+            <div class="paramlabel">
+            fm in: 
+            </div>
+            <div style="float:left;">
+                <div id="fmin0" style="height: 10px; width: 200px;"></div>
+            </div>
+            <div style="float:left;">
+                <button id="trigger0">trigger</button>
+            </div>
+            <div class="divider"></div>
+        </div>
+        
+        <div style="padding-top: 50px;">
+            <div class="paramlabel">
+            freq: 
+            </div>
+            <div style="float:left;">
+                <div id="freq1" style="height: 10px; width: 200px;"></div>
+            </div>
+            <div class="divider"></div>
+            
+            <div class="paramlabel">
+            gain: 
+            </div>
+            <div style="float:left;">
+                <div id="gain1" style="height: 10px; width: 200px;"></div>
+            </div>
+            <div class="divider"></div>
+            
+            <div class="paramlabel">
+            attack: 
+            </div>
+            <div style="float:left;">
+                <div id="attack1" style="height: 10px; width: 200px;"></div>
+            </div>
+            <div class="divider"></div>
+            
+            <div class="paramlabel">
+            release: 
+            </div>
+            <div style="float:left;">
+                <div id="release1" style="height: 10px; width: 200px;"></div>
+            </div>
+            <div class="divider"></div>
+            
+            <div class="paramlabel">
+            fm in: 
+            </div>
+            <div style="float:left;">
+                <div id="fmin1" style="height: 10px; width: 200px;"></div>
+            </div>
+            <div style="float:left;">
+                <button id="trigger1">trigger</button>
+            </div>
+            <div class="divider"></div>
+        </div>
+        <script>
+            
+            $(function() {
+                var tracks = [
+                    { frequency: 100, gain: 1.0, attack: .02, release: .2, fmIn: 0 },                    
+                    { frequency: 200, gain: 1.0, attack: .02, release: .2, fmIn: 200 },
+                    { frequency: 300, gain: 1.0, attack: .02, release: .2, fmIn: 100 },
+                    { frequency: 400, gain: 1.0, attack: .02, release: .2, fmIn: 0 }
+                ];
+                var canvas = $("#seq").get(0);
+                var app = new Gr00v3App({
+                                tracks: tracks, 
+                                canvas: canvas,
+                                bpm: 120,
+                                stepsPerBar: 16,
+                                bars: 1
+                            });
+                
+                $("#start").click(function() {
+                    app.start();
+                })
+                
+                $("#stop").click(function() {
+                    app.stop();
+                })
+                
+                $( "#freq0" ).slider({
+                  min: 100,
+                  max: 1000,
+                  value: app.getValue(0, "frequency"),
+                  slide: function( event, ui ) {
+                    app.setValue(0, "frequency", ui.value)
+                  }
+                });  
+    
+                $( "#gain0" ).slider({
+                    min: 0,
+                    max: 100,
+                    value: app.getValue(0, "gain") * 200,
+                    slide: function( event, ui ) {
+                      app.setValue(0, "gain", ui.value / 200)
+                    }
+                });
+            
+                $( "#attack0" ).slider({
+                    min: 0,
+                    max: 100,
+                    value: app.getValue(0, "attack") * 100,
+                    slide: function( event, ui ) {
+                      app.setValue(0, "attack", (ui.value / 100) + .2)
+                    }
+                });
+            
+                $( "#release0" ).slider({
+                    min: 0,
+                    max: 100,
+                    value: app.getValue(0, "release") * 100,
+                    slide: function( event, ui ) {
+                      app.setValue(0, "release", ui.value / 100)
+                    }
+                });
+
+                $( "#fmin0" ).slider({
+                    min: 0,
+                    max: 500,
+                    value: app.getValue(0, "fmIn"),
+                    slide: function( event, ui ) {
+                      app.setValue(0, "fmIn", ui.value)
+                    }
+                });
+            
+                $("#trigger0").click(function(e) {
+                    app.trigger(0);
+                });
+                
+                
+                $( "#freq1" ).slider({
+                  min: 100,
+                  max: 1000,
+                  value: app.getValue(1, "frequency"),
+                  slide: function( event, ui ) {
+                    app.setValue(1, "frequency", ui.value)
+                  }
+                });  
+    
+                $( "#gain1" ).slider({
+                    min: 0,
+                    max: 100,
+                    value: app.getValue(1, "gain") * 100,
+                    slide: function( event, ui ) {
+                      app.setValue(1, "gain", ui.value / 100)
+                    }
+                });
+            
+                $( "#attack1" ).slider({
+                    min: 0,
+                    max: 100,
+                    value: app.getValue(1, "attack") * 100,
+                    slide: function( event, ui ) {
+                      app.setValue(1, "attack", (ui.value / 100) + .2)
+                    }
+                });
+            
+                $( "#release1" ).slider({
+                    min: 0,
+                    max: 100,
+                    value: app.getValue(1, "release") * 100,
+                    slide: function( event, ui ) {
+                      app.setValue(1, "release", ui.value / 100)
+                    }
+                });
+
+                $( "#fmin1" ).slider({
+                    min: 0,
+                    max: 500,
+                    value: app.getValue(1, "fmIn"),
+                    slide: function( event, ui ) {
+                      app.setValue(1, "fmIn", ui.value)
+                    }
+                });
+            
+                $("#trigger1").click(function(e) {
+                    app.trigger(1);
+                });
+            });
+        </script>
+    </body>
+</html>
